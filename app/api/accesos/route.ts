@@ -44,6 +44,7 @@ export async function POST(req: Request) {
     expira: expira.toISOString(),
     activo: true,
     vistas: 0,
+    clave: typeof b.clave === "string" ? b.clave.trim() : "",
   };
   await adminDb().collection(COLECCION).doc(acceso.token).set(acceso);
   return NextResponse.json({ acceso });

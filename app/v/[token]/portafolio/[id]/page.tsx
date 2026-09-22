@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { exigirAcceso, puedeVer } from "@/lib/accesos";
-import { productoDe, familiaDe, fichaPunto1, idPorNombreCultivo } from "@/lib/datos";
+import { productoDe, familiaDe, fichaPunto1, idPorNombreCultivo, cultivoPorNombre } from "@/lib/datos";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +33,7 @@ export default async function Ficha({
       <p className="bajada">{p.f}</p>
 
       <h2>Ficha técnica</h2>
-      <div className="tarjeta">
+      <div className="card">
         <dl style={{ margin: 0, display: "grid", gridTemplateColumns: "minmax(140px,auto) 1fr", gap: "8px 18px" }}>
           <dt className="etiqueta">Composición garantizada</dt>
           <dd style={{ margin: 0 }}>{p1?.composicion || p.el}</dd>
@@ -60,14 +60,14 @@ export default async function Ficha({
       {p.ficha?.mezcla && (
         <>
           <h2>Mezcla y compatibilidad</h2>
-          <div className="tarjeta"><p style={{ margin: 0 }}>{p.ficha.mezcla}</p></div>
+          <div className="card"><p style={{ margin: 0 }}>{p.ficha.mezcla}</p></div>
         </>
       )}
 
       {p.ficha?.equiv && (
         <>
           <h2>Equivalentes en el mercado</h2>
-          <div className="tarjeta"><p style={{ margin: 0 }}>{p.ficha.equiv}</p></div>
+          <div className="card"><p style={{ margin: 0 }}>{p.ficha.equiv}</p></div>
         </>
       )}
 
@@ -121,13 +121,26 @@ export default async function Ficha({
                     <tr><th>Etapa fenológica</th><th>BBCH</th><th>Criticidad</th></tr>
                   </thead>
                   <tbody>
-                    {recs.map((r, i) => (
-                      <tr key={i}>
-                        <td>{r.e}</td>
-                        <td>{r.bbch || <span className="pendiente">sin escala publicada</span>}</td>
-                        <td><span className={claseK(r.k)}>{r.k}</span></td>
-                      </tr>
-                    ))}
+                    {recs.map((r, i) => {
+                      // Dos casos distintos: que el cultivo no tenga escala BBCH
+                      // publicada, o que la tenga pero el programa trabaje con sus
+                      // propias etapas y no escriba el código.
+                      const c = cultivoPorNombre(acceso, cultivo);
+                      const sinEscala = c && c.escalaPublicada === false;
+                      return (
+                        <tr key={i}>
+                          <td>{r.e}</td>
+                          <td>
+                            {r.bbch || (
+                              <span className="pendiente">
+                                {sinEscala ? "sin escala BBCH publicada" : "no lo indica el programa"}
+                              </span>
+                            )}
+                          </td>
+                          <td><span className={claseK(r.k)}>{r.k}</span></td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -139,7 +152,7 @@ export default async function Ficha({
       {p.ev && (
         <>
           <h2>Evidencia</h2>
-          <div className="tarjeta"><p style={{ margin: 0, color: "var(--suave)" }}>{p.ev}</p></div>
+          <div className="card"><p style={{ margin: 0, color: "var(--suave)" }}>{p.ev}</p></div>
         </>
       )}
     </>

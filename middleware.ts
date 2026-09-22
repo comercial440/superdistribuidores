@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Permitir por defecto NADA. Solo las rutas de esta lista existen; cualquier
 // otra cosa se manda a la pantalla de acceso no válido sin tocar Firestore.
-const PUBLICAS = ["/", "/expirado", "/admin", "/api/admin-login", "/api/accesos"];
-const TOKEN = /^\/v\/[A-Za-z0-9_-]{16,80}(\/|$)/;
+const PUBLICAS = ["/", "/expirado", "/admin", "/api/admin-login", "/api/accesos", "/api/clave"];
+const TOKEN = /^\/(v|clave)\/[A-Za-z0-9_-]{16,80}(\/|$)/;
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

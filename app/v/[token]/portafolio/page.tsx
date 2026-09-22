@@ -28,12 +28,12 @@ export default async function Portafolio({ params }: { params: { token: string }
       {[...porCategoria.entries()].map(([cat, lista]) => (
         <section key={cat}>
           <h2>{cat}</h2>
-          <div className="rejilla">
+          <div className="grid">
             {lista.map((p) => (
               <Link
                 key={p.id}
                 href={`/v/${params.token}/portafolio/${p.id}`}
-                className="tarjeta"
+                className="card"
                 style={{ textDecoration: "none", display: "block", margin: 0 }}
               >
                 <h3 style={{ margin: "0 0 4px" }}>{p.p}</h3>

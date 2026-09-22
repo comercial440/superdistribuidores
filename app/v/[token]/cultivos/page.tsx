@@ -17,7 +17,7 @@ export default async function Cultivos({ params }: { params: { token: string } }
         Para cada cultivo, sus etapas fenológicas en escala BBCH, qué demanda la planta en cada
         una y qué producto del portafolio entra, con su dosis y la referencia que lo sostiene.
       </p>
-      <div className="rejilla">
+      <div className="grid">
         {cultivos.map((c) => {
           const criticas = c.etapas.reduce(
             (n, e) => n + (e.prods || []).filter((p) => p.k === "Crítica").length, 0);
@@ -25,7 +25,7 @@ export default async function Cultivos({ params }: { params: { token: string } }
             <Link
               key={c.id}
               href={`/v/${params.token}/cultivos/${c.id}`}
-              className="tarjeta"
+              className="card"
               style={{ textDecoration: "none", display: "block", margin: 0 }}
             >
               <h3 style={{ margin: "0 0 2px" }}>{c.emoji} {c.nombre}</h3>

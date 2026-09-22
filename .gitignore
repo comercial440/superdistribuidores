@@ -4,3 +4,10 @@ node_modules
 .env.local
 .vercel
 *.log
+
+# Claves y notas locales: nunca al repositorio ni al despliegue
+CLAVE*.txt
+ENLACE*.txt
+*.clave.txt
+.DS_Store
+.vercel_infoagrinovo_backup/

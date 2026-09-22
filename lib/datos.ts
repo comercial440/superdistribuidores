@@ -6,6 +6,7 @@ import fenologiaJson from "@/data/fenologia.json";
 import competenciaJson from "@/data/competencia.json";
 import punto1Json from "@/data/punto1.json";
 import metaJson from "@/data/meta.json";
+import territorioJson from "@/data/territorio.json";
 import type { Acceso } from "@/lib/accesos";
 
 export interface Ficha {
@@ -35,10 +36,14 @@ export interface Etapa {
 }
 export interface Cultivo {
   id: string; nombre: string; emoji: string; sci: string; fam: string;
-  refBBCH: string; ciclo: string; nota: string; area: number; etapas: Etapa[];
+  refBBCH: string; ciclo: string; nota: string; area: number;
+  /** ¿Existe escala BBCH publicada para este cultivo? Los del Atlas la tienen. */
+  escalaPublicada?: boolean;
+  etapas: Etapa[];
 }
 
 export const META = metaJson as any;
+export const TERRITORIO = territorioJson as any;
 export const PUNTO1 = punto1Json as any;
 export const COMPETENCIA = competenciaJson as any;
 const PRODUCTOS = (portafolioJson as any).productos as Producto[];
@@ -81,6 +86,11 @@ export function productosDe(a: Acceso): Producto[] {
 
 export function productoDe(a: Acceso, id: string): Producto | null {
   return productosDe(a).find((p) => p.id === id) ?? null;
+}
+
+/** Cultivo por nombre, para resolver su escala y su id desde la ficha del producto. */
+export function cultivoPorNombre(a: Acceso, nombre: string): Cultivo | null {
+  return cultivosDe(a).find((c) => c.nombre === nombre) ?? null;
 }
 
 /** Nombre de cultivo -> id, para enlazar la ficha del producto con el cultivo. */

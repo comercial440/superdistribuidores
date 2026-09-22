@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 interface Acceso {
   token: string; codigoCorto: string; clienteId: string; titulo: string;
   destinatario: string; expira: string; activo: boolean; creado: string;
-  vistas?: number; ultimoAcceso?: string; cultivos: string[];
+  vistas?: number; ultimoAcceso?: string; cultivos: string[]; clave?: string;
 }
 
 const fecha = (s?: string) =>
@@ -15,8 +15,25 @@ export default function Admin() {
   const [clave, setClave] = useState("");
   const [error, setError] = useState("");
   const [accesos, setAccesos] = useState<Acceso[]>([]);
-  const [form, setForm] = useState({ clienteId: "", destinatario: "", titulo: "Superdistribuidores", dias: 8, cultivos: "" });
+  const [form, setForm] = useState({ clienteId: "", destinatario: "", titulo: "Distribuidores Aliados SYS", dias: 8, cultivos: "", clave: "" });
   const [nuevo, setNuevo] = useState<string>("");
+  const [copiado, setCopiado] = useState<string>("");
+
+  function enlaceDe(a: Acceso) {
+    return `${location.origin}/v/${a.token}`;
+  }
+
+  async function copiar(a: Acceso) {
+    const url = enlaceDe(a);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Si el navegador bloquea el portapapeles, al menos que lo vea para copiarlo a mano
+      prompt("Copia el enlace:", url);
+    }
+    setCopiado(a.token);
+    setTimeout(() => setCopiado(""), 2500);
+  }
 
   async function cargar() {
     const r = await fetch("/api/accesos");
@@ -46,7 +63,7 @@ export default function Admin() {
     const d = await r.json().catch(() => ({}));
     if (r.ok) {
       setNuevo(`${location.origin}/v/${d.acceso.token}`);
-      setForm({ ...form, clienteId: "", destinatario: "" });
+      setForm({ ...form, clienteId: "", destinatario: "", clave: "" });
       cargar();
     } else setError(d.error || "No fue posible crear el acceso.");
   }
@@ -75,14 +92,14 @@ export default function Admin() {
   }
 
   return (
-    <main className="envoltura">
+    <main className="wrap">
       <h1>Accesos por cliente</h1>
       <p className="bajada">
         Cada enlace es propio del cliente, con su vigencia y su alcance. Desactivarlo surte
         efecto de inmediato, sin volver a publicar la aplicación.
       </p>
 
-      <section className="tarjeta">
+      <section className="card">
         <h2 style={{ marginTop: 0 }}>Emitir un enlace</h2>
         <form onSubmit={crear} style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))" }}>
           <label>Identificador interno
@@ -100,6 +117,11 @@ export default function Admin() {
           <label>Vigencia (días)
             <input type="number" min={1} max={120} value={form.dias}
               onChange={(e) => setForm({ ...form, dias: Number(e.target.value) })}
+              style={{ width: "100%", padding: 8 }} />
+          </label>
+          <label>Clave para el cliente (opcional)
+            <input value={form.clave} onChange={(e) => setForm({ ...form, clave: e.target.value })}
+              placeholder="p. ej. SYS2027 · se entrega por otro canal"
               style={{ width: "100%", padding: 8 }} />
           </label>
           <label style={{ gridColumn: "1 / -1" }}>Cultivos visibles (ids separados por coma; vacío = todos)
@@ -124,7 +146,7 @@ export default function Admin() {
       <div className="tabla-envoltura">
         <table>
           <thead>
-            <tr><th>Destinatario</th><th>Código</th><th>Vence</th><th>Estado</th><th>Vistas</th><th>Último acceso</th><th></th></tr>
+            <tr><th>Destinatario</th><th>Enlace</th><th>Código</th><th>Vence</th><th>Estado</th><th>Vistas</th><th>Último acceso</th><th></th></tr>
           </thead>
           <tbody>
             {accesos.map((a) => {
@@ -132,7 +154,25 @@ export default function Admin() {
               return (
                 <tr key={a.token}>
                   <td><strong>{a.destinatario}</strong><br /><span style={{ color: "var(--suave)", fontSize: 12 }}>{a.clienteId}</span></td>
-                  <td>{a.codigoCorto}</td>
+                  <td>
+                    <button
+                      onClick={() => copiar(a)}
+                      title="Copiar el enlace de este cliente"
+                      style={{ padding: "5px 10px", cursor: "pointer" }}
+                    >
+                      {copiado === a.token ? "¡Copiado!" : "Copiar enlace"}
+                    </button>
+                    <br />
+                    <code style={{ fontSize: 11, color: "var(--suave)", wordBreak: "break-all" }}>
+                      {`/v/${a.token.slice(0, 10)}…`}
+                    </code>
+                  </td>
+                  <td>
+                    {a.codigoCorto}
+                    {a.clave ? (
+                      <><br /><span style={{ fontSize: 11, color: "var(--sys-verde)" }}>🔒 con clave</span></>
+                    ) : null}
+                  </td>
                   <td>{fecha(a.expira)}</td>
                   <td>{!a.activo ? "Desactivado" : vencido ? "Vencido" : "Activo"}</td>
                   <td>{a.vistas ?? 0}</td>

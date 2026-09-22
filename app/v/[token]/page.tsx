@@ -21,29 +21,29 @@ export default async function Portada({ params }: { params: { token: string } })
         esas van por separado.
       </p>
 
-      <div className="rejilla">
-        <div className="tarjeta">
+      <div className="grid">
+        <div className="card">
           <span className="cifra">{productos.length}</span>
           <p className="etiqueta">Productos con ficha</p>
         </div>
-        <div className="tarjeta">
+        <div className="card">
           <span className="cifra">{cultivos.length}</span>
           <p className="etiqueta">Cultivos del territorio</p>
         </div>
-        <div className="tarjeta">
+        <div className="card">
           <span className="cifra">{etapas}</span>
           <p className="etiqueta">Etapas fenológicas</p>
         </div>
-        <div className="tarjeta">
+        <div className="card">
           <span className="cifra">{PUNTO1.competencia ? Object.values(PUNTO1.competencia).reduce((n: number, v: any) => n + v.length, 0) : 0}</span>
           <p className="etiqueta">Fichas de competencia cotejadas</p>
         </div>
       </div>
 
       <h2>Qué encontrará aquí</h2>
-      <div className="rejilla">
+      <div className="grid">
         {puedeVer(acceso, "portafolio") && (
-          <Link href={`${base}/portafolio`} className="tarjeta" style={{ textDecoration: "none", display: "block" }}>
+          <Link href={`${base}/portafolio`} className="card" style={{ textDecoration: "none", display: "block" }}>
             <h3 style={{ margin: 0 }}>Portafolio y equivalentes</h3>
             <p style={{ color: "var(--suave)", margin: "6px 0 0" }}>
               Registro ICA, composición garantizada, propiedades fisicoquímicas, dosis en rango
@@ -52,7 +52,7 @@ export default async function Portada({ params }: { params: { token: string } })
           </Link>
         )}
         {puedeVer(acceso, "cultivos") && (
-          <Link href={`${base}/cultivos`} className="tarjeta" style={{ textDecoration: "none", display: "block" }}>
+          <Link href={`${base}/cultivos`} className="card" style={{ textDecoration: "none", display: "block" }}>
             <h3 style={{ margin: 0 }}>Manejo por cultivo</h3>
             <p style={{ color: "var(--suave)", margin: "6px 0 0" }}>
               En qué etapa fenológica entra cada producto, por qué, con qué dosis y con qué
@@ -61,7 +61,7 @@ export default async function Portada({ params }: { params: { token: string } })
           </Link>
         )}
         {puedeVer(acceso, "competencia") && (
-          <Link href={`${base}/competencia`} className="tarjeta" style={{ textDecoration: "none", display: "block" }}>
+          <Link href={`${base}/competencia`} className="card" style={{ textDecoration: "none", display: "block" }}>
             <h3 style={{ margin: 0 }}>Comparativo ficha a ficha</h3>
             <p style={{ color: "var(--suave)", margin: "6px 0 0" }}>
               Lo que declara cada envase, por familia de producto. Solo cifras impresas en una
@@ -72,7 +72,7 @@ export default async function Portada({ params }: { params: { token: string } })
       </div>
 
       <h2>De dónde sale la información</h2>
-      <div className="tarjeta">
+      <div className="card">
         <ul style={{ margin: 0, paddingLeft: 20 }}>
           {(META.fuentes || []).map((f: string) => <li key={f}>{f}</li>)}
         </ul>

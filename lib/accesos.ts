@@ -4,6 +4,8 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { createHmac, timingSafeEqual } from "crypto";
 import { adminDb } from "@/lib/firebaseAdmin";
 
 export const COLECCION = "sd_accesos";
@@ -21,6 +23,8 @@ export interface Acceso {
   creado: string;
   expira: string;           // ISO
   activo: boolean;
+  /** Clave corta opcional que el destinatario debe escribir. Se entrega por otro canal. */
+  clave?: string;
   notaRevocacion?: string;
   ultimoAcceso?: string;
   vistas?: number;
@@ -28,9 +32,52 @@ export interface Acceso {
 
 export type Estado = "ok" | "expirado" | "revocado" | "inexistente";
 
+/* ---------------------------------------------------------------- clave ----
+   La clave no se guarda en la cookie: se guarda una firma HMAC del token, que
+   solo el servidor puede calcular. Así la cookie no sirve para otro acceso ni
+   revela la clave. */
+
+function secretoFirma(): string {
+  return process.env.SD_ADMIN_TOKEN || "";
+}
+
+export function nombreCookieClave(token: string): string {
+  return "sd_c_" + token.slice(0, 16).replace(/[^A-Za-z0-9_-]/g, "");
+}
+
+export function firmaDe(token: string, clave: string): string {
+  return createHmac("sha256", secretoFirma()).update(token + "|" + clave).digest("hex");
+}
+
+function igual(a: string, b: string): boolean {
+  const x = Buffer.from(a), y = Buffer.from(b);
+  return x.length === y.length && timingSafeEqual(x, y);
+}
+
+/** ¿Este acceso pide clave y todavía no se ha escrito en este navegador? */
+export function faltaClave(a: Acceso): boolean {
+  const clave = (a.clave || "").trim();
+  if (!clave) return false;
+  const puesta = cookies().get(nombreCookieClave(a.token))?.value || "";
+  if (!puesta) return true;
+  return !igual(puesta, firmaDe(a.token, clave));
+}
+
+/** Comprueba la clave que escribió el destinatario. */
+export async function claveCorrecta(token: string, escrita: string): Promise<string | null> {
+  const { estado, acceso } = await buscarAcceso(token);
+  if (estado !== "ok" || !acceso) return null;
+  const clave = (acceso.clave || "").trim();
+  if (!clave) return null;
+  if (clave.toUpperCase() !== (escrita || "").trim().toUpperCase()) return null;
+  return firmaDe(acceso.token, clave);
+}
+
 /** Formato del token: no toca la red si el token no tiene la forma esperada. */
 export function formatoValido(token: string): boolean {
-  return /^[A-Za-z0-9_-]{16,80}$/.test(token || "");
+  const t = token || "";
+  // Token largo de la URL, o código corto dictable (p. ej. MAR-99E3).
+  return /^[A-Za-z0-9_-]{16,80}$/.test(t) || /^[A-Za-z]{2,4}-[A-Za-z0-9]{4,8}$/.test(t);
 }
 
 function vencido(a: Acceso): boolean {
@@ -73,6 +120,8 @@ export const buscarAcceso = cache(async (
 export async function exigirAcceso(clave: string): Promise<Acceso> {
   const { estado, acceso } = await buscarAcceso(clave);
   if (estado !== "ok" || !acceso) redirect(`/expirado?e=${estado}`);
+  // Si el acceso pide clave y no se ha escrito, no se renderiza ningún contenido.
+  if (faltaClave(acceso)) redirect(`/clave/${encodeURIComponent(clave)}`);
   return acceso;
 }
 

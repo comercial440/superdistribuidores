@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 export default function Nav({ base, items }: { base: string; items: [string, string][] }) {
   const aqui = usePathname();
   return (
-    <nav className="nav">
+    <nav className="tabs">
       {items.map(([ruta, texto]) => {
         const href = ruta ? `${base}/${ruta}` : base;
         const activo = ruta ? aqui.startsWith(href) : aqui === base;
