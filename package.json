@@ -1,0 +1,24 @@
+{
+  "name": "superdistribuidores",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vista de solo lectura del portafolio tecnico SYS para distribuidores, con acceso por enlace temporal y revocable.",
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.0.0",
+    "next": "14.2.35",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.0",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "typescript": "5.5.4"
+  }
+}

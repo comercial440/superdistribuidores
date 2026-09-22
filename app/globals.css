@@ -1,0 +1,70 @@
+:root {
+  --azul: #0b3d68; --azul-claro: #1663a5; --verde: #3f8f3f; --verde-claro: #e8f3e8;
+  --fondo: #f6f8fa; --papel: #ffffff; --texto: #16212b; --suave: #5a6b7a;
+  --linea: #dde4ea; --alerta: #b4442c; --ambar: #fff6e0; --ambar-linea: #e0b85a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --azul: #8fc2ee; --azul-claro: #a9d2f5; --verde: #7fc47f; --verde-claro: #16301d;
+    --fondo: #0e1418; --papel: #151d24; --texto: #e6edf3; --suave: #9fb0bf;
+    --linea: #26323c; --alerta: #f0907a; --ambar: #2a2313; --ambar-linea: #7a6428;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--fondo); color: var(--texto);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55; font-size: 15px;
+}
+a { color: var(--azul-claro); }
+.envoltura { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+/* ---- barra superior ---- */
+.barra { background: var(--azul); color: #fff; padding: 14px 0; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .barra { background: #0b1a27; } }
+.barra .envoltura { display: flex; flex-wrap: wrap; gap: 12px; align-items: baseline; justify-content: space-between; }
+.marca { font-weight: 700; letter-spacing: .04em; color: #fff; text-decoration: none; font-size: 15px; }
+.marca small { display: block; font-weight: 400; opacity: .78; letter-spacing: 0; font-size: 12px; }
+.vigencia { font-size: 12.5px; background: rgba(255,255,255,.14); padding: 4px 10px; border-radius: 999px; }
+.vigencia.pronto { background: rgba(255,200,120,.25); }
+.nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 0 0; }
+.nav a { color: #fff; text-decoration: none; font-size: 13.5px; padding: 5px 11px; border-radius: 7px; background: rgba(255,255,255,.10); }
+.nav a.activo { background: #fff; color: var(--azul); font-weight: 600; }
+
+/* ---- bloques ---- */
+.tarjeta { background: var(--papel); border: 1px solid var(--linea); border-radius: 11px; padding: 18px; margin: 14px 0; }
+.rejilla { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); }
+h1 { font-size: 25px; margin: 22px 0 4px; line-height: 1.25; }
+h2 { font-size: 18px; margin: 26px 0 8px; }
+h3 { font-size: 15.5px; margin: 16px 0 6px; }
+.bajada { color: var(--suave); margin: 0 0 16px; max-width: 70ch; }
+.etiqueta { display: inline-block; font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--suave); }
+.ica { font-variant-numeric: tabular-nums; background: var(--verde-claro); color: var(--verde); border-radius: 6px; padding: 1px 7px; font-size: 12.5px; font-weight: 600; }
+.cifra { display: block; font-size: 22px; font-weight: 700; color: var(--azul-claro); line-height: 1.1; }
+.tarjeta .etiqueta { display: block; margin: 3px 0 0; }
+.aviso { background: var(--ambar); border: 1px solid var(--ambar-linea); border-radius: 9px; padding: 12px 14px; font-size: 13.5px; }
+.pendiente { color: var(--suave); font-style: italic; }
+
+/* ---- tablas ---- */
+.tabla-envoltura { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { border-bottom: 1px solid var(--linea); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: var(--fondo); font-weight: 600; white-space: nowrap; }
+tr.sys td { background: var(--verde-claro); }
+tr.sys td:first-child { font-weight: 700; }
+
+/* ---- criticidad ---- */
+.k { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
+.k-critica { background: #fde8e2; color: #9c3a22; }
+.k-alta { background: #fdf0d8; color: #8a6412; }
+.k-media, .k-otra { background: var(--fondo); color: var(--suave); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .k-critica { background: #3a1d16; color: #f0a48e; }
+  :root:not([data-theme="light"]) .k-alta { background: #332a12; color: #e2c176; }
+}
+
+/* ---- pie ---- */
+.pie { border-top: 1px solid var(--linea); margin-top: 34px; padding: 20px 0 40px; color: var(--suave); font-size: 12.5px; }
+.pie strong { color: var(--texto); }
+.centro { max-width: 560px; margin: 12vh auto; text-align: center; padding: 0 16px; }
